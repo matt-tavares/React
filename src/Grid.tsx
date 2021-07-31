@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import './Grid.css';
+
 const axios = require('axios');
 
 type defSource = { url: string}
@@ -21,19 +23,30 @@ export function Grid( props: defSource ){
         await axios.get( url )
         .then( (res: GetStudentResponse) => {
             console.log(res.data)
+            
+            function getAno( student: string ) {
+                const ano: string = student.substr(0, 4)
+                const mes: string = student.substr(5, 2)
+                const dia: string = student.substr(8, 2)
+
+                return `${dia} / ${mes} / ${ano}`
+            }
+
             lines = res.data.map( ( student ) => 
                 <tr key={student.id_aluno}>
-                    <td>
+                    <td className='linha'>
                         {student.id_aluno}
                     </td>
-                    <td>
+                    <td className='linha'>
                         {student.tx_nome}
                     </td>
-                    <td>
-                        {student.tx_sexo}
+                    <td className='linha'>
+                        {student.tx_sexo == 'm' ? 'Masculino' : 'Feminino'}
                     </td>
-                    <td>
-                        {student.dt_nascimento}
+                    <td className='linha'>
+                        {
+                            getAno(student.dt_nascimento)
+                        }
                     </td>
                 </tr>
             )
@@ -49,18 +62,18 @@ export function Grid( props: defSource ){
     if (loading) {
         return <p>Carregando...</p>
     } else {
-        return <table>
+        return <table className='tabela'>
                     <tr>
-                        <td>
+                        <td className='linha'>
                             Id
                         </td>
-                        <td>
+                        <td className='linha'>
                             Nome
                         </td>
-                        <td>
+                        <td className='linha'>
                             Sexo
                         </td>
-                        <td>
+                        <td className='linha'>
                             Data Nascimento
                         </td>
                     </tr>

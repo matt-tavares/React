@@ -1,0 +1,16 @@
+.tabela{
+    width: 400px; 
+    margin-left: auto;
+    margin-right: auto; 
+    text-align: center;
+    background: rgb(120, 145, 228);
+    border-width: 1px;
+    border-style: solid;
+    border-color: #F00;
+}
+
+.linha{
+    border-width: 1px;
+    border-style: solid;
+    border-color: #fff; 
+}
