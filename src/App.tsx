@@ -5,8 +5,7 @@ import { Grid } from './Grid';
 
 function App() {
   return (
-  <div>
-    <p className='title'>Tabela 'aluno' acessado no localhost</p>
+  <div className='container'>
     <Grid url={'http://localhost:8080/aluno/'}/>
   </div>
   );
