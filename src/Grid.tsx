@@ -80,7 +80,7 @@ export function Grid( props: defSource ){
 
     function handleAdvance() {
         if (lines) {
-            if( finalShowLines <= lines?.length) {
+            if( finalShowLines < lines.length-1) {
                 setInitialShowLines(initialShowLines+5)
                 setFinalShowLines(finalShowLines+5)
             }
@@ -125,7 +125,7 @@ export function Grid( props: defSource ){
                 </table>
                 <br/>
                 <button onClick={handleBackOff}> {'<<'} </button>
-                {' '}
+                {initialShowLines}
                 <button onClick={handleAdvance}> {'>>'} </button>
                 </div>
     }
