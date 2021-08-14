@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
 import Spinner from 'react-bootstrap/Spinner';
-import BottstrapTable from 'react-bootstrap-table-next';
+import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+
+import IconButton from '@material-ui/core/IconButton'
+import DeleteIcon from '@material-ui/icons/Delete'
+import EditButton from '@material-ui/icons/Edit'
 
 const axios = require('axios');
 
@@ -19,6 +23,8 @@ const axios = require('axios');
 
 // npm install axios
 
+// npm i @material-ui/icons
+
 type defSource = { url: string}
 type Student = {
     id_aluno: string,
@@ -33,7 +39,7 @@ export function GridPagination( props: defSource) {
     const [ data, setData ] = useState<any []>([])
 
     const paginationFactoryOptions = {
-        pageStartIndex: 0,
+        pageStartIndex: 1,
         paginationSize: 5,
         showTotal: false,
         sizePerPageList: [
@@ -43,9 +49,12 @@ export function GridPagination( props: defSource) {
             {
                 text: '10', value: 10
             },
-            /* {
-                text: 'All', value: products.length
-            } */
+            {
+                text: '15', value: 15
+            },
+            {
+                text: 'All', value: data.length
+            }
         ],
         withFirstAndLast: true,
         alwaysShowAllItens: true,
@@ -81,10 +90,30 @@ export function GridPagination( props: defSource) {
             sort: true
         },
         {
-            dataField: 'dt-nascimento',
+            dataField: 'dt_nascimento',
             text: 'Data de Nascimento',
             sort: true
-        }
+        },
+        {
+            dataField: 'df',
+            isDummyField: true,
+            text: 'Alterar',
+            formatter: (cellContent: any, row: any) => (
+                <IconButton color='default' aria-label='add an alarm'>
+                    <EditButton onClick={() => {alert('Editar')}} />
+                </IconButton>
+            )
+        },
+        {
+            dataField: 'id_aluno',
+            isDummyField: true,
+            text: 'Apagar',
+            formatter: (cell: any, row: any) => (
+                <IconButton color='secondary' aria-label='add an alarm'>
+                    <DeleteIcon onClick={() => {alert('Apagar')}} />
+                </IconButton>
+            )
+        },
     ]
 
     useEffect(() => {
@@ -103,6 +132,29 @@ export function GridPagination( props: defSource) {
         getLines()
     }, [])
 
-    if (isLoading)
-    return <div> </div>
+    if (isLoading){
+        return <div className="d-flex justify-content-center" style={{color: 'blue'}}>
+                <Spinner animation="border" variant="primary" />
+                <b> ==== C A R R E G A N D O ====</b>
+                <Spinner animation="border" variant="primary" />
+               </div>
+    } else {
+        return <div className="d-flex justify-content-center">
+
+                <table style={{width: '800px', maxWidth: '700px'}}>
+                            <BootstrapTable
+                            striped
+                            bordered={true}
+                            hover
+                            keyField="id_aluno"
+                            data={ data }
+                            columns={ colums }
+                            rowStyle={{fontSize: 13, textAlign: 'center', borderRadius: '25px'}}
+                            headerClasses="table table-dark text-center"
+                            classes="thead-light"
+                            pagination={ paginationFactory(paginationFactoryOptions) }
+                            />
+                </table>
+               </div>
+    }
 }
