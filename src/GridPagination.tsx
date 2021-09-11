@@ -1,4 +1,6 @@
+import { RouteComponentProps, Link } from '@reach/router'
 import React, { useState, useEffect } from 'react';
+import { GlobalStyle, SForm, STitle } from './StyledComponents'
 
 import Spinner from 'react-bootstrap/Spinner';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -7,6 +9,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditButton from '@material-ui/icons/Edit'
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 const axios = require('axios');
 
@@ -25,7 +28,7 @@ const axios = require('axios');
 
 // npm i @material-ui/icons
 
-type defSource = { url: string}
+interface defSource extends RouteComponentProps { url: string}
 type Student = {
     id_aluno: string,
     tx_nome: string,
@@ -77,7 +80,8 @@ export function GridPagination( props: defSource) {
         {
             dataField: 'id_aluno',
             text: 'Matrícula',
-            sort: true
+            sort: true,
+                  
         },
         {
             dataField: 'tx_nome',
@@ -95,22 +99,24 @@ export function GridPagination( props: defSource) {
             sort: true
         },
         {
-            dataField: 'df',
+            dataField: 'edit',
             isDummyField: true,
-            text: 'Alterar',
+            text: 'Editar',
             formatter: (cellContent: any, row: any) => (
                 <IconButton color='default' aria-label='add an alarm'>
-                    <EditButton onClick={() => {alert('Editar')}} />
+                    <Link to={'/StudentEdit/edit/' + row.id_aluno}>
+                        <EditButton color='action'/>
+                    </Link>
                 </IconButton>
             )
         },
         {
-            dataField: 'id_aluno',
+            dataField: 'delete',
             isDummyField: true,
             text: 'Apagar',
             formatter: (cell: any, row: any) => (
                 <IconButton color='secondary' aria-label='add an alarm'>
-                    <DeleteIcon onClick={() => {alert('Apagar')}} />
+                    <DeleteIcon onClick={() => {handleDeleteStudent(row.id_aluno)}} />
                 </IconButton>
             )
         },
@@ -118,10 +124,15 @@ export function GridPagination( props: defSource) {
 
     useEffect(() => {
         async function getLines() {
-            let lines: JSX.Element [] = []
-
             await axios.get(props.url)
             .then((res: GetStudentResponse) => {
+                res.data.map(( _data ) => {
+                    var year = _data.dt_nascimento.slice(0, 4)
+                    var month = _data.dt_nascimento.slice(5, 7)
+                    var day = _data.dt_nascimento.slice(8, 10)
+                    var completeData = `${day}/${month}/${year}`
+                    _data.dt_nascimento = completeData
+                })
                 setData(res.data)
                 setIsLoading(false)
             })
@@ -130,31 +141,47 @@ export function GridPagination( props: defSource) {
             })
         }
         getLines()
-    }, [])
+    }, [isLoading])
+
+    async function handleDeleteStudent(_id: string) {
+        var _resultado = window.confirm("Você realmente quer apagar?")
+        if (_resultado) {
+            await axios.delete(props.url + _id)
+            setIsLoading(true)
+          } 
+    }
 
     if (isLoading){
         return <div className="d-flex justify-content-center" style={{color: 'blue'}}>
-                <Spinner animation="border" variant="primary" />
-                <b> ==== C A R R E G A N D O ====</b>
-                <Spinner animation="border" variant="primary" />
+                    <Spinner animation="border" variant="primary" />
+                        <b> ==== C A R R E G A N D O ====</b>
+                    <Spinner animation="border" variant="primary" />
                </div>
     } else {
-        return <div className="d-flex justify-content-center">
-
-                <table style={{width: '800px', maxWidth: '700px'}}>
-                            <BootstrapTable
-                            striped
-                            bordered={true}
-                            hover
-                            keyField="id_aluno"
-                            data={ data }
-                            columns={ colums }
-                            rowStyle={{fontSize: 13, textAlign: 'center', borderRadius: '25px'}}
-                            headerClasses="table table-dark text-center"
-                            classes="thead-light"
-                            pagination={ paginationFactory(paginationFactoryOptions) }
-                            />
-                </table>
-               </div>
+        return <>
+            <GlobalStyle />
+            <SForm>
+                <STitle> ALUNOS </STitle>
+                <BootstrapTable
+                    striped
+                    bordered={true}
+                    hover
+                    keyField="id_aluno"
+                    data={ data }
+                    columns={ colums }
+                    rowStyle={{fontSize: 13, textAlign: 'center', borderRadius: '25px'}}
+                    headerClasses="table table-dark text-center"
+                    classes="thead-light"
+                    pagination={ paginationFactory(paginationFactoryOptions) }
+                />
+            
+                <IconButton color='default' aria-label='add an alarm'>
+                    <Link to={'/StudentEdit/new/'}>
+                        <AddCircleOutlineIcon color='action'/>
+                    </Link>
+                </IconButton>
+            </SForm>
+            <GlobalStyle />
+        </>
     }
 }

@@ -1,13 +1,17 @@
 import React from 'react';
+import { Router } from '@reach/router'
 import './App.css';
 
+import { StudentEdit } from './StudentEdit'
 import { GridPagination } from './GridPagination';
 
 function App() {
   return (
-  <div className='container'>
-    <GridPagination url={'http://localhost:8080/aluno/'}/>
-  </div>
+      <Router>
+          <GridPagination url={'http://localhost:8080/aluno/'} path='/'/>
+          <StudentEdit path='/StudentEdit/:action' />
+          <StudentEdit path='/StudentEdit/:action/:id' />
+      </Router>
   );
 }
 
