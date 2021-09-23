@@ -12,7 +12,7 @@ type Student = {
     tx_sexo: string,
     dt_nascimento: string,
 }
-type GetStudentResponse = { data: Student[] }
+type GetStudentResponse = { data: Student, status: string }
 type UpdateResponse = {data: { updated: boolean}}
 type InsertResponse = {data: { inserted: boolean}}
 
@@ -23,7 +23,7 @@ interface TProps extends RouteComponentProps {
 
 export function StudentEdit(props: TProps) {
 
-    const url = 'http://localhost:8080/aluno/'
+    const url = 'http://localhost:8080/v1/alunos/'
     const { id, action } = props
     const [ txNome, setTxNome ] = useState('')
     const [ txSexo, setTxSexo ] = useState('')
@@ -35,14 +35,14 @@ export function StudentEdit(props: TProps) {
         async function getStudent() {
             await axios.get(url + id)
             .then((res: GetStudentResponse) => {
-                setTxNome(res.data[0].tx_nome)
-                setTxSexo(res.data[0].tx_sexo)
-                var year = res.data[0].dt_nascimento.slice(0, 4)
-                var month = res.data[0].dt_nascimento.slice(5, 7)
-                var day = res.data[0].dt_nascimento.slice(8, 10)
+                setTxNome(res.data.tx_nome)
+                setTxSexo(res.data.tx_sexo)
+                var year = res.data.dt_nascimento.slice(0, 4)
+                var month = res.data.dt_nascimento.slice(5, 7)
+                var day = res.data.dt_nascimento.slice(8, 10)
                 var completeData = `${year}-${month}-${day}`
-                res.data[0].dt_nascimento = completeData
-                setDtNascimento(res.data[0].dt_nascimento)
+                res.data.dt_nascimento = completeData
+                setDtNascimento(res.data.dt_nascimento)
                 setIsLoading(false)
             })
             .catch((error: any) => {
@@ -79,8 +79,8 @@ export function StudentEdit(props: TProps) {
 
         if (action === 'new') {
             await axios.post(url, aluno)
-            .then((res: InsertResponse) => {
-                if (res.data.inserted){
+            .then((res: GetStudentResponse) => {
+                if (res.status == '201'){
                     alert('Aluno cadastrado!!')
                     navigate('/')
                 } else
@@ -91,12 +91,13 @@ export function StudentEdit(props: TProps) {
             })
         } else if (action === 'edit') {
             await axios.put(url+id, aluno)
-            .then((res: UpdateResponse) => {
-                if (res.data.updated){
+            .then((res: GetStudentResponse) => {
+                if (res.status == '201'){
                     alert('Aluno atualizado!!');
                     navigate('/')
-                }else
+                }else {
                     alert('Aluno não atualizado!!')
+                }
             })
             .catch((error: any) => {
                 setError(error.mensage)

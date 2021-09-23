@@ -8,7 +8,7 @@ import { GridPagination } from './GridPagination';
 function App() {
   return (
       <Router>
-          <GridPagination url={'http://localhost:8080/aluno/'} path='/'/>
+          <GridPagination url={'http://localhost:8080/v1/alunos/'} path='/'/>
           <StudentEdit path='/StudentEdit/:action' />
           <StudentEdit path='/StudentEdit/:action/:id' />
       </Router>
